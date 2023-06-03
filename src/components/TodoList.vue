@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// TODO:タスク削除
 // TODO:ソート
 // TODO:データ保存
 
@@ -43,6 +42,11 @@ const moveTodoTask = (index: number): void => {
   taskList.value.push(doneList.value[index]);
   doneList.value.splice(index, 1);
 };
+
+// タスク削除
+const deleteTask = (index: number): void => {
+  taskList.value.splice(index, 1);
+};
 </script>
 
 <template>
@@ -64,13 +68,21 @@ const moveTodoTask = (index: number): void => {
         >
         </v-text-field>
 
+        <!-- TodoList -->
         <v-list>
           <v-list-item v-for="(task, index) in taskList" :key="task.title" :title="task.title">
-            <!-- <v-checkbox label="Checkbox"></v-checkbox> -->
             <template v-slot:prepend>
               <v-list-item-action start>
                 <v-radio color="indigo" v-on:click="moveDoneTask(index)"></v-radio>
               </v-list-item-action>
+            </template>
+            <template v-slot:append>
+              <v-icon
+                color="indigo"
+                icon="mdi-close"
+                size="small"
+                v-on:click="deleteTask(index)"
+              ></v-icon>
             </template>
           </v-list-item>
         </v-list>
