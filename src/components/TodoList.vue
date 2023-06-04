@@ -53,11 +53,6 @@ const deleteTask = (index: number): void => {
   <v-container>
     <v-row no-gutters justify="center">
       <v-col cols="8">
-        <div :class="['text-h5', 'pb-2']">
-          <v-icon color="info" icon="mdi-checkbox-marked-circle-plus-outline" size="small"></v-icon>
-          ToDo
-        </div>
-
         <v-text-field
           v-model="newTaskName"
           label="タスクの追加"
@@ -67,8 +62,12 @@ const deleteTask = (index: number): void => {
           v-on:keydown.enter="insertTask"
         >
         </v-text-field>
+      </v-col>
+    </v-row>
 
-        <!-- TodoList -->
+    <!-- TodoList -->
+    <v-row no-gutters justify="center">
+      <v-col cols="8">
         <v-list>
           <v-list-item v-for="(task, index) in taskList" :key="task.title" :title="task.title">
             <template v-slot:prepend>
@@ -86,8 +85,12 @@ const deleteTask = (index: number): void => {
             </template>
           </v-list-item>
         </v-list>
+      </v-col>
+    </v-row>
 
-        <!-- DoneList -->
+    <!-- DoneList -->
+    <v-row no-gutters justify="center">
+      <v-col cols="8">
         <v-expansion-panels v-if="doneList.length > 0">
           <v-expansion-panel>
             <v-expansion-panel-title> 完了済み {{ doneList.length }} </v-expansion-panel-title>
