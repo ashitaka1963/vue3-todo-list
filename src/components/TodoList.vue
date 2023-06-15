@@ -2,19 +2,36 @@
 // TODO:ソート
 // TODO:データ保存
 
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 interface Task {
   title: string;
   createDate: Date;
 }
 
+interface SortItem {
+  title: string;
+  key: string;
+}
+
+const sortItems: Array<SortItem> = [
+  { title: 'あいうえお順', key: 'title' },
+  { title: '作成日', key: 'createDate' }
+];
+
 const taskListInit: Task[] = [];
 const doneListInit: Task[] = [];
 
+const selectSort = ref({ title: 'あいうえお順', key: 'title' });
 const newTaskName = ref('');
 const taskList = ref(taskListInit);
 const doneList = ref(doneListInit);
+
+const sortedTaskList = computed((): Task[] => {
+  let sortKey: string = selectSort.value.key;
+  let result = [...taskList.value].sort((a: any, b: any) => (a[sortKey] < b[sortKey] ? -1 : 1));
+  return result;
+});
 
 // タスク追加
 const insertTask = (): void => {
@@ -52,6 +69,22 @@ const deleteTask = (index: number): void => {
 <template>
   <v-container>
     <v-row no-gutters justify="center">
+      <v-col cols="5">
+        <div :class="['text-h6', 'pa-2']">今日の予定</div>
+      </v-col>
+      <v-col cols="3">
+        <v-select
+          v-model="selectSort"
+          :items="sortItems"
+          item-title="title"
+          item-value="key"
+          variant="underlined"
+          return-object
+          prepend-inner-icon="mdi-sort"
+        ></v-select>
+      </v-col>
+    </v-row>
+    <v-row no-gutters justify="center">
       <v-col cols="8">
         <v-text-field
           v-model="newTaskName"
@@ -69,7 +102,11 @@ const deleteTask = (index: number): void => {
     <v-row no-gutters justify="center">
       <v-col cols="8">
         <v-list>
-          <v-list-item v-for="(task, index) in taskList" :key="task.title" :title="task.title">
+          <v-list-item
+            v-for="(task, index) in sortedTaskList"
+            :key="task.title"
+            :title="task.title"
+          >
             <template v-slot:prepend>
               <v-list-item-action start>
                 <v-radio color="indigo" v-on:click="moveDoneTask(index)"></v-radio>
