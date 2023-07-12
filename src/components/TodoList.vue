@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// TODO:ソート
-// TODO:データ保存
-
 import { ref, computed } from 'vue';
 
 interface Task {
@@ -19,8 +16,13 @@ const sortItems: Array<SortItem> = [
   { title: '作成日', key: 'createDate' }
 ];
 
-const taskListInit: Task[] = [];
-const doneListInit: Task[] = [];
+const getSessionStorage = (key: string): Task[] => {
+  const getItem = sessionStorage.getItem(key);
+  return getItem !== null ? JSON.parse(getItem) : [];
+};
+
+let taskListInit: Task[] = getSessionStorage('todoTaskList');
+let doneListInit: Task[] = getSessionStorage('doneTaskList');
 
 const selectSort = ref({ title: 'あいうえお順', key: 'title' });
 const newTaskName = ref('');
@@ -28,7 +30,7 @@ const taskList = ref(taskListInit);
 const doneList = ref(doneListInit);
 
 const sortedTaskList = computed((): Task[] => {
-  let sortKey: string = selectSort.value.key;
+  const sortKey: string = selectSort.value.key;
   let result = [...taskList.value].sort((a: any, b: any) => (a[sortKey] < b[sortKey] ? -1 : 1));
   return result;
 });
@@ -46,23 +48,37 @@ const insertTask = (): void => {
 
   taskList.value.push(tempTask);
   newTaskName.value = '';
+
+  setTaskListToSessionStorage();
 };
 
 // タスク移動(Todo⇒Done)
 const moveDoneTask = (index: number): void => {
   doneList.value.push(taskList.value[index]);
   taskList.value.splice(index, 1);
+
+  setTaskListToSessionStorage();
 };
 
 // タスク移動(Done⇒Todo)
 const moveTodoTask = (index: number): void => {
   taskList.value.push(doneList.value[index]);
   doneList.value.splice(index, 1);
+
+  setTaskListToSessionStorage();
 };
 
 // タスク削除
 const deleteTask = (index: number): void => {
   taskList.value.splice(index, 1);
+
+  setTaskListToSessionStorage();
+};
+
+// セッション保存
+const setTaskListToSessionStorage = (): void => {
+  sessionStorage.setItem('todoTaskList', JSON.stringify(taskList.value));
+  sessionStorage.setItem('doneTaskList', JSON.stringify(doneList.value));
 };
 </script>
 
